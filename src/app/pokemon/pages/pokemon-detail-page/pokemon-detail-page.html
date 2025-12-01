@@ -1,0 +1,137 @@
+<section class="min-h-screen bg-gray-100">
+  <!-- Header con navegación -->
+  <header class="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-6 shadow-lg">
+    <div class="container mx-auto px-4">
+      <button 
+        (click)="goBack()"
+        class="flex items-center gap-2 hover:text-blue-200 transition mb-4"
+      >
+        <span class="text-2xl">←</span>
+        <span>Volver al listado</span>
+      </button>
+      <h1 class="text-3xl font-bold">Detalles del Pokémon</h1>
+    </div>
+  </header>
+
+  <div class="container mx-auto px-4 py-8">
+    <!-- Loading -->
+    @if (isLoading()) {
+      <div class="flex justify-center items-center py-20">
+        <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600"></div>
+      </div>
+    }
+
+    <!-- Error -->
+    @if (error()) {
+      <article class="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-lg">
+        <p class="font-semibold">Error al cargar el Pokémon</p>
+        <p class="text-sm mt-1">{{ error() }}</p>
+      </article>
+    }
+
+    <!-- Detalles del Pokémon -->
+    @if (pokemonData(); as pokemon) {
+      <article class="bg-white rounded-lg shadow-xl overflow-hidden">
+        <!-- Header con imagen -->
+        <header class="bg-gradient-to-br from-blue-500 to-purple-600 p-8">
+          <div class="flex flex-col md:flex-row items-center gap-8">
+            <figure class="bg-white rounded-full p-4 shadow-lg">
+              <img 
+                [src]="pokemon.sprites.other['official-artwork'].front_default || pokemon.sprites.front_default" 
+                [alt]="pokemon.name"
+                class="w-48 h-48 object-contain"
+              />
+            </figure>
+            
+            <div class="text-white text-center md:text-left">
+              <h2 class="text-4xl font-bold capitalize mb-2">{{ pokemon.name }}</h2>
+              <p class="text-blue-100 text-xl">#{{ pokemon.id }}</p>
+              
+              <!-- Tipos -->
+              <div class="flex gap-2 mt-4 justify-center md:justify-start">
+                @for (type of pokemon.types; track type.slot) {
+                  <span class="px-4 py-2 bg-white bg-opacity-20 rounded-full text-sm font-semibold">
+                    {{ type.type.name }}
+                  </span>
+                }
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- Información Principal -->
+        <section class="p-8">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <!-- Características Básicas -->
+            <article class="bg-gray-50 rounded-lg p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-4">Características</h3>
+              <ul class="space-y-3">
+                <li class="flex justify-between">
+                  <span class="text-gray-600">Altura:</span>
+                  <span class="font-semibold">{{ pokemon.height / 10 }} m</span>
+                </li>
+                <li class="flex justify-between">
+                  <span class="text-gray-600">Peso:</span>
+                  <span class="font-semibold">{{ pokemon.weight / 10 }} kg</span>
+                </li>
+                <li class="flex justify-between">
+                  <span class="text-gray-600">Experiencia Base:</span>
+                  <span class="font-semibold">{{ pokemon.base_experience }}</span>
+                </li>
+                <li class="flex justify-between">
+                  <span class="text-gray-600">Orden:</span>
+                  <span class="font-semibold">#{{ pokemon.order }}</span>
+                </li>
+                <li class="flex justify-between">
+                  <span class="text-gray-600">Movimientos:</span>
+                  <span class="font-semibold">{{ pokemon.moves.length }}</span>
+                </li>
+              </ul>
+            </article>
+
+            <!-- Habilidades -->
+            <article class="bg-gray-50 rounded-lg p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-4">Habilidades</h3>
+              <ul class="space-y-2">
+                @for (ability of pokemon.abilities; track ability.slot) {
+                  <li class="flex items-center gap-2">
+                    <span class="w-2 h-2 bg-blue-600 rounded-full"></span>
+                    <span class="capitalize">{{ ability.ability.name }}</span>
+                    @if (ability.is_hidden) {
+                      <span class="text-xs bg-yellow-200 text-yellow-800 px-2 py-1 rounded">
+                        Oculta
+                      </span>
+                    }
+                  </li>
+                }
+              </ul>
+            </article>
+          </div>
+
+          <!-- Estadísticas -->
+          <article class="bg-gray-50 rounded-lg p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Estadísticas</h3>
+            <div class="space-y-4">
+              @for (stat of pokemon.stats; track stat.stat.name) {
+                <div>
+                  <div class="flex justify-between mb-1">
+                    <span class="text-gray-700 capitalize text-sm">
+                      {{ stat.stat.name }}
+                    </span>
+                    <span class="font-semibold text-sm">{{ stat.base_stat }}</span>
+                  </div>
+                  <div class="w-full bg-gray-200 rounded-full h-3">
+                    <div 
+                      class="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full transition-all duration-500"
+                      [style.width.%]="(stat.base_stat / 255) * 100"
+                    ></div>
+                  </div>
+                </div>
+              }
+            </div>
+          </article>
+        </section>
+      </article>
+    }
+  </div>
+</section>

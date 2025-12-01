@@ -1,0 +1,101 @@
+<section class="min-h-screen bg-gray-100">
+  <!-- Header -->
+  <header class="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-8 shadow-lg">
+    <div class="container mx-auto px-4">
+      <h1 class="text-4xl font-bold mb-2">Pokémon Explorer</h1>
+      <p class="text-blue-100">Descubre el mundo Pokémon</p>
+    </div>
+  </header>
+
+  <div class="container mx-auto px-4 py-8">
+    <!-- Hero Section con Total -->
+    @if (pokemonData()) {
+      <article class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-2xl font-bold text-gray-800">Total de Pokémon</h2>
+            <p class="text-gray-600 mt-1">Pokémon disponibles en la base de datos</p>
+          </div>
+          <div class="bg-blue-600 text-white rounded-full w-20 h-20 flex items-center justify-center">
+            <span class="text-3xl font-bold">{{ pokemonData()!.count }}</span>
+          </div>
+        </div>
+      </article>
+    }
+
+    <!-- Loading State -->
+    @if (isLoading()) {
+      <div class="flex justify-center items-center py-20">
+        <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600"></div>
+      </div>
+    }
+
+    <!-- Error State -->
+    @if (error()) {
+      <article class="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-lg">
+        <p class="font-semibold">Error al cargar los datos</p>
+        <p class="text-sm mt-1">{{ error() }}</p>
+      </article>
+    }
+
+    <!-- Lista de Pokémon -->
+    @if (pokemonData()?.results) {
+      <section>
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">
+          Lista de Pokémon (Página {{ currentPage() }})
+        </h2>
+        
+        <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          @for (pokemon of pokemonData()!.results; track pokemon.name) {
+            <li>
+              <article 
+                class="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 p-4 cursor-pointer transform hover:scale-105"
+                (click)="viewPokemonDetail(pokemon)"
+              >
+                <div class="flex items-center justify-between">
+                  <div>
+                    <h3 class="text-lg font-semibold text-gray-800 capitalize">
+                      {{ pokemon.name }}
+                    </h3>
+                    <p class="text-sm text-gray-500">
+                      #{{ extractPokemonId(pokemon.url) }}
+                    </p>
+                  </div>
+                  <button 
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
+                    (click)="viewPokemonDetail(pokemon); $event.stopPropagation()"
+                  >
+                    Ver detalles
+                  </button>
+                </div>
+              </article>
+            </li>
+          }
+        </ul>
+
+        <!-- Controles de Paginación -->
+        <nav class="flex justify-center items-center gap-4">
+          <button
+            [disabled]="!canGoPrevious()"
+            (click)="previousPage()"
+            class="px-6 py-3 bg-gray-600 text-white rounded-lg font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-gray-700 transition"
+          >
+            ← Anterior
+          </button>
+
+          <span class="text-gray-700 font-medium">
+            Página {{ currentPage() }}
+          </span>
+
+          <button
+            [disabled]="!canGoNext()"
+            (click)="nextPage()"
+            class="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold disabled:bg-blue-300 disabled:cursor-not-allowed hover:bg-blue-700 transition"
+          >
+            Siguiente →
+          </button>
+        </nav>
+      </section>
+    }
+  </div>
+</section>

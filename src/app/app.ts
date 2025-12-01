@@ -10,3 +10,17 @@ import { RouterOutlet } from '@angular/router';
 export class App {
   protected readonly title = signal('pokemon-app');
 }
+
+
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [RouterOutlet],
+  template: `
+    <router-outlet />
+  `,
+  styles: []
+})
+export class AppComponent {
+  title = 'pokemon-app';
+}
