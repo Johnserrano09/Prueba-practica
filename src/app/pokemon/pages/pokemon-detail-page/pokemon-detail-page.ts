@@ -1,6 +1,6 @@
-import { Component, inject, input, signal, effect } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PokemonService, PokemonDetail } from '../../services/pokemon';
 
 @Component({
@@ -13,21 +13,22 @@ import { PokemonService, PokemonDetail } from '../../services/pokemon';
 export class PokemonDetailPageComponent {
   private pokemonService = inject(PokemonService);
   private router = inject(Router);
-
-  id = input.required<string>();
+  private route = inject(ActivatedRoute);
 
   pokemonData = signal<PokemonDetail | null>(null);
   isLoading = signal<boolean>(false);
   error = signal<string>('');
 
   constructor() {
-    effect(() => {
-      this.loadPokemonDetail();
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      if (id) {
+        this.loadPokemonDetail(id);
+      }
     });
   }
 
-  private loadPokemonDetail(): void {
-    const pokemonId = this.id();
+  private loadPokemonDetail(pokemonId: string): void {
     this.isLoading.set(true);
     this.error.set('');
 
